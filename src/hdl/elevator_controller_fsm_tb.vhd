@@ -130,7 +130,7 @@ begin
                  assert w_floor = "0011" report "bad up from floor2" severity failure;
           w_stop <= '0';  wait for k_clk_period; -- when 0 it go
                  assert w_floor = "0010" report "bad wait on floor2" severity failure;
-          w_up_down <= '1'; wait for k_clk_period;
+          w_stop <= '1'; wait for k_clk_period;
                 assert w_floor = "0010" report "bad up from floor2" severity failure;
 		--will stay at bottom floor until i_up_down is 1
 		-- stay at bottom floor 
