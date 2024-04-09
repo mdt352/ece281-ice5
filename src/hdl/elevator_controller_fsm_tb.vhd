@@ -103,20 +103,38 @@ begin
         w_reset <= '1';  wait for k_clk_period;
             assert w_floor = "0010" report "bad reset" severity failure; 
         -- clear reset
-		
+		w_reset <= '0'; 
 		-- active UP signal
 		w_up_down <= '1'; 
-		
 		-- stay on each o_floor for 2 cycles and then move up to the next o_floor
-        w_stop <= '1';  wait for k_clk_period * 2;
-            assert w_floor = "0010" report "bad wait on floor2" severity failure;
-        w_stop <= '0';  wait for k_clk_period;
-            assert w_floor = "0011" report "bad up from floor2" severity failure;
+        w_stop <= '1';  wait for k_clk_period; --when 1 it stop
+            assert w_floor = "0010" report "bad wait on floor2" severity failure; -- stop on floor 2
+        w_stop <= '0';  wait for k_clk_period; -- when 0 it go
+            assert w_floor = "0011" report "bad up from floor2" severity failure; -- go from floor 2-3
+        w_stop <= '1';  wait for k_clk_period; --when 1 it stop
+            assert w_floor = "0011" report "bad wait on floor3" severity failure; -- stop on floor 3
+        w_stop <= '0';  wait for k_clk_period; -- when 0 it go
+            assert w_floor = "0100" report "bad up from floor3" severity failure; -- go from floor 3-4
+        -- stay at top floor until i_up_down goes to 0
+        w_up_down <= '1'; wait for k_clk_period;
+            assert w_floor = "0100" report "bad wait on floor4" severity failure; -- wait on floor 4
+            
 		-- rest of cases
-        
         -- go back DOWN
-          
-		  	
+          w_up_down <= '0';
+            
+          w_up_down <= '0'; wait for k_clk_period; -- when 0 it is down
+                 assert w_floor = "0011" report "bad wait on floor 2" severity failure; 
+        -- stay on each o_floor for 2 cycles and then move down to the next o_floor
+          w_stop <= '1';  wait for k_clk_period; --when 1 it stop
+                 assert w_floor = "0011" report "bad up from floor2" severity failure;
+          w_stop <= '0';  wait for k_clk_period; -- when 0 it go
+                 assert w_floor = "0010" report "bad wait on floor2" severity failure;
+          w_up_down <= '1'; wait for k_clk_period;
+                assert w_floor = "0010" report "bad up from floor2" severity failure;
+		--will stay at bottom floor until i_up_down is 1
+		-- stay at bottom floor 
+		
 		wait; -- wait forever
 	end process;	
 	-----------------------------------------------------	
